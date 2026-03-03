@@ -2,111 +2,174 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Crypto Market Terminal</title>
+<title>MARGINLA - Meme Lord Terminal</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
   margin:0;
-  background:#0d1117;
+  background:#0b0f14;
   color:white;
-  font-family:Arial;
+  font-family:Arial, Helvetica, sans-serif;
 }
+
 header{
-  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 25px;
+  background:#111827;
+  border-bottom:1px solid #1f2937;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
   font-size:22px;
   font-weight:bold;
-  border-bottom:1px solid #222;
+  color:#00ff99;
 }
+
+.search{
+  padding:8px 12px;
+  background:#1f2937;
+  border:none;
+  color:white;
+  width:250px;
+}
+
 table{
   width:100%;
   border-collapse:collapse;
 }
+
 th,td{
   padding:12px;
-  border-bottom:1px solid #222;
+  border-bottom:1px solid #1f2937;
   text-align:left;
 }
+
 th{
-  background:#111;
+  background:#111827;
 }
+
 tr:hover{
-  background:#161b22;
+  background:#1a2230;
   cursor:pointer;
 }
+
 .green{color:#00ff99;}
 .red{color:#ff4d4d;}
-button{
-  padding:8px 15px;
-  background:#00ffcc;
-  border:none;
-  cursor:pointer;
-  font-weight:bold;
-}
-.card{
+
+.section{
   padding:20px;
 }
-canvas{
-  background:#111;
+
+.card{
+  background:#111827;
+  padding:15px;
+  margin-bottom:15px;
 }
+
+.avatar{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:90px;
+  border-radius:50%;
+  box-shadow:0 0 25px #00ff99;
+  animation:glow 2s infinite alternate;
+}
+
+@keyframes glow{
+  from{box-shadow:0 0 15px #00ff99;}
+  to{box-shadow:0 0 35px #00ff99;}
+}
+
+button{
+  padding:8px 14px;
+  background:#00ff99;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+canvas{
+  background:#111827;
+  padding:10px;
+}
+
 </style>
 </head>
+
 <body>
 
 <header>
-💎 Crypto Market Terminal
-<button onclick="login()" style="float:right;">Login</button>
+<div class="logo">🐸 MARGINLA</div>
+<input type="text" class="search" placeholder="Search coin..." onkeyup="searchCoin(this.value)">
 </header>
 
-<div id="market"></div>
+<div class="section" id="global"></div>
+<div class="section" id="gainers"></div>
+<div class="section" id="market"></div>
 
-<div id="detail" style="display:none;" class="card">
+<div id="detail" style="display:none;" class="section">
 <h2 id="coinName"></h2>
 <p id="coinPrice"></p>
 <canvas id="chart"></canvas>
+<br>
 <button onclick="back()">Back</button>
 </div>
 
-<script type="module">
+<!-- AVATAR -->
+<img src="avatar.png" class="avatar">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+<!-- MUSIC -->
+<audio autoplay loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
 
-const firebaseConfig={
-  apiKey:"AIzaSyDT905UnWKjyCZB2CzgzgLIk_P6NNslj7U",
-  authDomain:"lilo-f8779.firebaseapp.com",
-  projectId:"lilo-f8779",
-  storageBucket:"lilo-f8779.firebasestorage.app",
-  messagingSenderId:"542537325157",
-  appId:"1:542537325157:web:cd19e01a94a7535641848c"
-};
+<script>
 
-initializeApp(firebaseConfig);
-const auth=getAuth();
+let allCoins=[];
 
-window.login=async()=>{
-  const provider=new GoogleAuthProvider();
-  await signInWithPopup(auth,provider);
-  alert("Logged in!");
+async function loadGlobal(){
+  const res=await fetch("https://api.coingecko.com/api/v3/global");
+  const data=await res.json();
+  const g=data.data;
+
+  document.getElementById("global").innerHTML=`
+  <div class="card">
+  🌍 Market Cap: $${Math.round(g.total_market_cap.usd).toLocaleString()} <br>
+  📊 24h Volume: $${Math.round(g.total_volume.usd).toLocaleString()} <br>
+  ₿ BTC Dominance: ${g.market_cap_percentage.btc.toFixed(2)}%
+  </div>
+  `;
 }
 
 async function loadMarket(){
-  const res=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false");
+  const res=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false");
   const data=await res.json();
+  allCoins=data;
 
+  renderTable(data);
+  renderGainers(data);
+}
+
+function renderTable(data){
   let html="<table>";
-  html+="<tr><th>#</th><th>Name</th><th>Price</th><th>24h %</th><th>Market Cap</th><th>Volume</th></tr>";
+  html+="<tr><th>#</th><th>Name</th><th>Price</th><th>24h %</th><th>Market Cap</th></tr>";
 
   data.forEach((coin,i)=>{
     const change=coin.price_change_percentage_24h;
     html+=`
     <tr onclick="viewCoin('${coin.id}')">
     <td>${i+1}</td>
-    <td>${coin.name}</td>
+    <td>${coin.name} (${coin.symbol.toUpperCase()})</td>
     <td>$${coin.current_price.toLocaleString()}</td>
     <td class="${change>=0?'green':'red'}">${change.toFixed(2)}%</td>
     <td>$${coin.market_cap.toLocaleString()}</td>
-    <td>$${coin.total_volume.toLocaleString()}</td>
     </tr>
     `;
   });
@@ -115,8 +178,22 @@ async function loadMarket(){
   document.getElementById("market").innerHTML=html;
 }
 
+function renderGainers(data){
+  const sorted=[...data].sort((a,b)=>b.price_change_percentage_24h - a.price_change_percentage_24h);
+  const top=sorted.slice(0,5);
+
+  let html="<div class='card'><h3>🚀 Top Gainers 24h</h3>";
+  top.forEach(c=>{
+    html+=`${c.name} <span class="green">${c.price_change_percentage_24h.toFixed(2)}%</span><br>`;
+  });
+  html+="</div>";
+
+  document.getElementById("gainers").innerHTML=html;
+}
+
 window.viewCoin=async(id)=>{
   document.getElementById("market").style.display="none";
+  document.getElementById("gainers").style.display="none";
   document.getElementById("detail").style.display="block";
 
   const res=await fetch(`https://api.coingecko.com/api/v3/coins/${id}?localization=false&sparkline=true`);
@@ -134,7 +211,7 @@ window.viewCoin=async(id)=>{
       labels:prices.map((_,i)=>i),
       datasets:[{
         data:prices,
-        borderColor:"#00ffcc"
+        borderColor:"#00ff99"
       }]
     }
   });
@@ -142,11 +219,21 @@ window.viewCoin=async(id)=>{
 
 window.back=()=>{
   document.getElementById("market").style.display="block";
+  document.getElementById("gainers").style.display="block";
   document.getElementById("detail").style.display="none";
 }
 
+function searchCoin(keyword){
+  const filtered=allCoins.filter(c=>
+    c.name.toLowerCase().includes(keyword.toLowerCase())
+  );
+  renderTable(filtered);
+}
+
+loadGlobal();
 loadMarket();
 
 </script>
+
 </body>
 </html>
