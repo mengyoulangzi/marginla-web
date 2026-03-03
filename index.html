@@ -2,249 +2,215 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Marginla Luxury</title>
+<title>Marginla Billionaire Terminal</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
 body{
 margin:0;
 font-family:'Orbitron',sans-serif;
-background:radial-gradient(circle at top,#111 0%,#000 60%);
+background:radial-gradient(circle at center,#111,#000);
 color:#fcd535;
+overflow:hidden;
 text-align:center;
-overflow-x:hidden;
-transition:0.5s;
 }
 
-/* GOLD GLOW */
-.glow{
-text-shadow:0 0 15px #fcd535;
+/* Glass container */
+.glass{
+backdrop-filter:blur(15px);
+background:rgba(255,215,0,0.05);
+border:1px solid rgba(255,215,0,0.3);
+border-radius:20px;
+padding:20px;
+width:350px;
+margin:auto;
+margin-top:50px;
+box-shadow:0 0 40px rgba(255,215,0,0.3);
 }
 
-/* ENTER SCREEN */
-#enterScreen{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:999;
-}
-
-#enterBtn{
-padding:15px 40px;
-border:2px solid gold;
-background:transparent;
-color:gold;
-font-size:20px;
-cursor:pointer;
-transition:0.3s;
-}
-
-#enterBtn:hover{
-background:gold;
-color:black;
-box-shadow:0 0 40px gold;
-}
-
-.container{
-display:none;
-padding:30px;
-}
-
-/* AVATAR */
+/* Avatar glow */
 .avatar{
 width:150px;
 border-radius:50%;
 border:3px solid gold;
-box-shadow:0 0 40px gold;
+box-shadow:0 0 50px gold;
 animation:pulse 2s infinite alternate;
 }
 
 @keyframes pulse{
 from{box-shadow:0 0 20px gold;}
-to{box-shadow:0 0 60px gold;}
+to{box-shadow:0 0 70px gold;}
 }
 
-/* SENTIMENT BAR */
-#sentimentBar{
-width:300px;
-height:20px;
-border:1px solid gold;
-margin:20px auto;
+.counter{
+font-size:26px;
+margin:15px;
 }
 
-#sentimentFill{
-height:100%;
-background:gold;
-width:50%;
-}
+.green{color:#00ff88;}
+.red{color:#ff4444;}
 
-/* ORDER BOOK */
-#orderBook{
-width:320px;
-margin:20px auto;
-font-size:14px;
-text-align:left;
-}
-
-/* LIQUIDATION POPUP */
-.popup{
-position:fixed;
-right:20px;
-bottom:20px;
-background:black;
-border:1px solid gold;
-padding:10px 20px;
-animation:slide 0.5s ease;
-}
-
-@keyframes slide{
-from{transform:translateX(200px);}
-to{transform:translateX(0);}
-}
-
-/* TRADE GAME */
-.trade-btn{
-margin:10px;
-padding:10px 20px;
-border:1px solid gold;
-background:transparent;
-color:gold;
-cursor:pointer;
-}
-
-.trade-btn:hover{
+button{
+padding:10px 25px;
+border:none;
 background:gold;
 color:black;
+cursor:pointer;
+border-radius:8px;
+font-weight:bold;
 }
 
-.whale-mode{
-background:linear-gradient(45deg,#000,#1a1a1a,#000);
+button:hover{
+transform:scale(1.1);
+}
+
+.popup{
+position:fixed;
+top:20px;
+right:20px;
+background:#111;
+padding:15px;
+border-left:5px solid red;
+color:white;
+display:none;
+}
+
+/* Explosion */
+.explode{
+position:absolute;
+color:gold;
+font-size:20px;
+pointer-events:none;
+animation:boom 0.6s forwards;
+}
+
+@keyframes boom{
+to{transform:scale(3);opacity:0;}
 }
 </style>
 </head>
 
 <body>
 
-<div id="enterScreen">
-<h1 class="glow">WELCOME WHALE 🐋</h1>
-<button id="enterBtn">ENTER PORTFOLIO</button>
-</div>
-
 <audio id="bgMusic" loop>
 <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<div class="container" id="mainContent">
+<div class="glass">
+<img src="avatar.jpg" class="avatar">
+<h1>MARGINLA</h1>
 
-<img class="avatar" src="avatar.jpg">
-<h1 class="glow">MARGINLA</h1>
-
-<h3>Portfolio: $<span id="money">1,248,750</span></h3>
-<div>PNL: <span id="pnl">+0</span></div>
-
-<div id="sentimentBar">
-<div id="sentimentFill"></div>
+<div class="counter">
+Portfolio: $<span id="money">1248750</span>
+(<span id="pnl" class="green">+0</span>)
 </div>
-<div id="sentimentText"></div>
 
-<div id="orderBook"></div>
+<div>BTC Price: $<span id="btcPrice">Loading...</span></div>
 
-<button class="trade-btn" onclick="trade('buy')">BUY</button>
-<button class="trade-btn" onclick="trade('sell')">SELL</button>
-<button class="trade-btn" onclick="toggleWhale()">🐋 Whale Mode</button>
+<br>
+<button onclick="toggleWhale()">🐋 Whale Mode</button>
+<button onclick="startGame()">🎮 Trade</button>
 
 </div>
+
+<div class="popup" id="liq">⚠️ Massive Liquidation Detected!</div>
 
 <script>
+
+/* MUSIC START */
+document.body.addEventListener("click",()=>{
+document.getElementById("bgMusic").play();
+},{once:true});
+
+/* PORTFOLIO */
 let money=1248750;
 let pnl=0;
-let whale=false;
 
-/* ENTER */
-document.getElementById("enterBtn").onclick=function(){
-document.getElementById("enterScreen").style.display="none";
-document.getElementById("mainContent").style.display="block";
-document.getElementById("bgMusic").play();
-}
-
-/* PNL */
 setInterval(()=>{
-let change=Math.floor(Math.random()*200-100);
-if(whale) change*=3;
+let change=Math.floor(Math.random()*400-200);
 money+=change;
 pnl+=change;
+
 document.getElementById("money").innerText=money.toLocaleString();
 document.getElementById("pnl").innerText=(pnl>=0?"+":"")+pnl.toLocaleString();
-document.getElementById("pnl").style.color=pnl>=0?"#00ff88":"#ff4444";
+document.getElementById("pnl").className=pnl>=0?"green":"red";
+
+if(Math.abs(change)>300){
+document.getElementById("liq").style.display="block";
+setTimeout(()=>document.getElementById("liq").style.display="none",3000);
+}
 },1000);
 
-/* SENTIMENT */
-setInterval(()=>{
-let percent=Math.floor(Math.random()*60+30);
-document.getElementById("sentimentFill").style.width=percent+"%";
-document.getElementById("sentimentText").innerText="Market Sentiment: "+percent+"% Bullish";
-},3000);
-
-/* ORDER BOOK */
-setInterval(()=>{
-let html="";
-for(let i=0;i<5;i++){
-let price=(62000+Math.random()*100).toFixed(2);
-let size=(Math.random()*5).toFixed(2);
-html+="<div>"+price+" | "+size+"</div>";
+/* BTC REAL API */
+async function getBTC(){
+try{
+let res=await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+let data=await res.json();
+document.getElementById("btcPrice").innerText=parseFloat(data.price).toLocaleString();
+}catch{}
 }
-document.getElementById("orderBook").innerHTML=html;
-},1500);
+setInterval(getBTC,5000);
+getBTC();
 
-/* LIQUIDATION */
-setInterval(()=>{
-let popup=document.createElement("div");
-popup.className="popup";
-let val=Math.floor(Math.random()*50000);
-popup.innerText="Liquidation -$"+val.toLocaleString();
-document.body.appendChild(popup);
-setTimeout(()=>popup.remove(),3000);
-},10000);
-
-/* TRADE GAME */
-function trade(type){
-let result=Math.random()>0.5;
-let popup=document.createElement("div");
-popup.className="popup";
-popup.innerText=result?"Trade Win 💰":"Trade Loss ❌";
-document.body.appendChild(popup);
-setTimeout(()=>popup.remove(),2000);
-}
-
-/* WHALE MODE */
+/* Whale Mode */
+let whale=false;
 function toggleWhale(){
 whale=!whale;
-document.body.classList.toggle("whale-mode");
+document.body.style.background=whale?
+"radial-gradient(circle at center,#331a00,#000)":
+"radial-gradient(circle at center,#111,#000)";
 }
 
-/* FLASH CRASH */
-setInterval(()=>{
-document.body.style.background="darkred";
-setTimeout(()=>document.body.style.background="radial-gradient(circle at top,#111 0%,#000 60%)",1000);
-},30000);
-
-/* CLICK GOLD SPARK */
+/* Explosion click */
 document.addEventListener("click",e=>{
-let spark=document.createElement("div");
-spark.style.position="absolute";
-spark.style.left=e.pageX+"px";
-spark.style.top=e.pageY+"px";
-spark.style.color="gold";
-spark.innerText="💰";
-document.body.appendChild(spark);
-setTimeout(()=>spark.remove(),800);
+let boom=document.createElement("div");
+boom.className="explode";
+boom.innerText="💥";
+boom.style.left=e.pageX+"px";
+boom.style.top=e.pageY+"px";
+document.body.appendChild(boom);
+setTimeout(()=>boom.remove(),600);
 });
-</script>
 
+/* Mini trading game */
+function startGame(){
+let result=Math.random()>0.5?1000:-1000;
+money+=result;
+alert(result>0?"Trade Win +$1000":"Trade Loss -$1000");
+}
+
+/* THREE JS BACKGROUND */
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+const renderer=new THREE.WebGLRenderer({alpha:true});
+renderer.setSize(window.innerWidth,window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const geometry=new THREE.BufferGeometry();
+const vertices=[];
+for(let i=0;i<2000;i++){
+vertices.push(
+THREE.MathUtils.randFloatSpread(2000),
+THREE.MathUtils.randFloatSpread(2000),
+THREE.MathUtils.randFloatSpread(2000)
+);
+}
+geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
+const material=new THREE.PointsMaterial({color:0xffd700});
+const stars=new THREE.Points(geometry,material);
+scene.add(stars);
+
+camera.position.z=5;
+
+function animate(){
+requestAnimationFrame(animate);
+stars.rotation.x+=0.0005;
+stars.rotation.y+=0.0005;
+renderer.render(scene,camera);
+}
+animate();
+
+</script>
 </body>
 </html>
