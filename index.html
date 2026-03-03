@@ -3,44 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <title>Marginla</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
 
 <style>
 body {
     margin: 0;
     padding: 0;
-    background: linear-gradient(-45deg, #0f0f0f, #001f3f, #0f0f0f, #001a33);
-    background-size: 400% 400%;
-    animation: gradientMove 10s ease infinite;
     font-family: 'Orbitron', sans-serif;
-    color: white;
+    background: black;
+    color: #fcd535;
     text-align: center;
     overflow-x: hidden;
 }
 
-@keyframes gradientMove {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
+/* màn hình enter */
+#enterScreen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999;
 }
 
+#enterBtn {
+    padding: 15px 40px;
+    border: 2px solid #fcd535;
+    color: #fcd535;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#enterBtn:hover {
+    background: #fcd535;
+    color: black;
+    box-shadow: 0 0 25px #fcd535;
+}
+
+/* nội dung chính */
 .container {
     margin-top: 100px;
+    display: none;
 }
 
 .avatar {
-    width: 130px;
+    width: 140px;
     border-radius: 50%;
-    border: 3px solid #00f7ff;
-    box-shadow: 0 0 20px #00f7ff;
+    border: 3px solid #fcd535;
+    box-shadow: 0 0 25px #fcd535;
     margin-bottom: 20px;
 }
 
 h1 {
-    font-size: 40px;
-    color: #00f7ff;
-    text-shadow: 0 0 10px #00f7ff, 0 0 20px #00f7ff;
+    font-size: 42px;
+    text-shadow: 0 0 15px #fcd535;
 }
 
 .bio {
@@ -48,50 +69,78 @@ h1 {
     margin-bottom: 30px;
 }
 
-.gif {
-    width: 320px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px #00f7ff;
-    margin-bottom: 30px;
+.counter {
+    font-size: 26px;
+    margin: 20px;
+    color: white;
+    text-shadow: 0 0 10px #fcd535;
 }
 
 .links a {
     display: block;
-    width: 230px;
-    margin: 10px auto;
-    padding: 12px;
-    background: transparent;
-    border: 2px solid #00f7ff;
-    color: #00f7ff;
+    width: 240px;
+    margin: 12px auto;
+    padding: 14px;
+    border: 2px solid #fcd535;
+    color: #fcd535;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: 0.3s;
 }
 
 .links a:hover {
-    background: #00f7ff;
+    background: #fcd535;
     color: black;
-    box-shadow: 0 0 20px #00f7ff;
+    box-shadow: 0 0 25px #fcd535;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Nhạc nền -->
-<audio autoplay loop>
+<!-- ENTER SCREEN -->
+<div id="enterScreen">
+    <h1>WELCOME WHALE 🐳</h1>
+    <button id="enterBtn">ENTER THE MARKET</button>
+</div>
+
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<div class="container">
+<!-- MAIN CONTENT -->
+<div class="container" id="mainContent">
 
 <img class="avatar" src="avatar.jpg">
 
 <h1>MARGINLA</h1>
+<p class="bio">Binance Trader • Whale Mode Activated</p>
 
-<p class="bio">Crypto Trader • Web3 Investor • Risk Taker</p>
+<div class="counter">
+Portfolio: $<span id="money">1248750</span>
+</div>
 
-<img class="gif" src="trading.gif">
+<!-- TradingView Widget -->
+<div style="margin:30px;">
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+new TradingView.widget({
+  "width": 350,
+  "height": 400,
+  "symbol": "BINANCE:BTCUSDT",
+  "interval": "15",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "theme": "dark",
+  "style": "1",
+  "locale": "en",
+  "toolbar_bg": "#000000",
+  "enable_publishing": false,
+  "hide_top_toolbar": true,
+  "hide_legend": true
+});
+</script>
+</div>
 
 <div class="links">
 <a href="#">Binance</a>
@@ -100,6 +149,22 @@ h1 {
 </div>
 
 </div>
+
+<script>
+// ENTER EFFECT
+document.getElementById("enterBtn").onclick = function() {
+    document.getElementById("enterScreen").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+    document.getElementById("bgMusic").play();
+}
+
+// MONEY COUNTER INCREASE
+let money = 1248750;
+setInterval(function() {
+    money += Math.floor(Math.random() * 50);
+    document.getElementById("money").innerText = money.toLocaleString();
+}, 1000);
+</script>
 
 </body>
 </html>
