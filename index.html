@@ -2,168 +2,248 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Marginla</title>
+<title>Marginla Luxury</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Orbitron', sans-serif;
-    background: black;
-    color: #fcd535;
-    text-align: center;
-    overflow-x: hidden;
+body{
+margin:0;
+font-family:'Orbitron',sans-serif;
+background:radial-gradient(circle at top,#111 0%,#000 60%);
+color:#fcd535;
+text-align:center;
+overflow-x:hidden;
+transition:0.5s;
 }
 
-/* màn hình enter */
-#enterScreen {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 999;
+/* GOLD GLOW */
+.glow{
+text-shadow:0 0 15px #fcd535;
 }
 
-#enterBtn {
-    padding: 15px 40px;
-    border: 2px solid #fcd535;
-    color: #fcd535;
-    background: transparent;
-    font-size: 20px;
-    cursor: pointer;
-    transition: 0.3s;
+/* ENTER SCREEN */
+#enterScreen{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:999;
 }
 
-#enterBtn:hover {
-    background: #fcd535;
-    color: black;
-    box-shadow: 0 0 25px #fcd535;
+#enterBtn{
+padding:15px 40px;
+border:2px solid gold;
+background:transparent;
+color:gold;
+font-size:20px;
+cursor:pointer;
+transition:0.3s;
 }
 
-/* nội dung chính */
-.container {
-    margin-top: 100px;
-    display: none;
+#enterBtn:hover{
+background:gold;
+color:black;
+box-shadow:0 0 40px gold;
 }
 
-.avatar {
-    width: 140px;
-    border-radius: 50%;
-    border: 3px solid #fcd535;
-    box-shadow: 0 0 25px #fcd535;
-    margin-bottom: 20px;
+.container{
+display:none;
+padding:30px;
 }
 
-h1 {
-    font-size: 42px;
-    text-shadow: 0 0 15px #fcd535;
+/* AVATAR */
+.avatar{
+width:150px;
+border-radius:50%;
+border:3px solid gold;
+box-shadow:0 0 40px gold;
+animation:pulse 2s infinite alternate;
 }
 
-.bio {
-    color: #aaa;
-    margin-bottom: 30px;
+@keyframes pulse{
+from{box-shadow:0 0 20px gold;}
+to{box-shadow:0 0 60px gold;}
 }
 
-.counter {
-    font-size: 26px;
-    margin: 20px;
-    color: white;
-    text-shadow: 0 0 10px #fcd535;
+/* SENTIMENT BAR */
+#sentimentBar{
+width:300px;
+height:20px;
+border:1px solid gold;
+margin:20px auto;
 }
 
-.links a {
-    display: block;
-    width: 240px;
-    margin: 12px auto;
-    padding: 14px;
-    border: 2px solid #fcd535;
-    color: #fcd535;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: 0.3s;
+#sentimentFill{
+height:100%;
+background:gold;
+width:50%;
 }
 
-.links a:hover {
-    background: #fcd535;
-    color: black;
-    box-shadow: 0 0 25px #fcd535;
+/* ORDER BOOK */
+#orderBook{
+width:320px;
+margin:20px auto;
+font-size:14px;
+text-align:left;
+}
+
+/* LIQUIDATION POPUP */
+.popup{
+position:fixed;
+right:20px;
+bottom:20px;
+background:black;
+border:1px solid gold;
+padding:10px 20px;
+animation:slide 0.5s ease;
+}
+
+@keyframes slide{
+from{transform:translateX(200px);}
+to{transform:translateX(0);}
+}
+
+/* TRADE GAME */
+.trade-btn{
+margin:10px;
+padding:10px 20px;
+border:1px solid gold;
+background:transparent;
+color:gold;
+cursor:pointer;
+}
+
+.trade-btn:hover{
+background:gold;
+color:black;
+}
+
+.whale-mode{
+background:linear-gradient(45deg,#000,#1a1a1a,#000);
 }
 </style>
 </head>
 
 <body>
 
-<!-- ENTER SCREEN -->
 <div id="enterScreen">
-    <h1>WELCOME WHALE 🐳</h1>
-    <button id="enterBtn">ENTER THE MARKET</button>
+<h1 class="glow">WELCOME WHALE 🐋</h1>
+<button id="enterBtn">ENTER PORTFOLIO</button>
 </div>
 
-<!-- MUSIC -->
 <audio id="bgMusic" loop>
-  <source src="music.mp3" type="audio/mpeg">
+<source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- MAIN CONTENT -->
 <div class="container" id="mainContent">
 
 <img class="avatar" src="avatar.jpg">
+<h1 class="glow">MARGINLA</h1>
 
-<h1>MARGINLA</h1>
-<p class="bio">Binance Trader • Whale Mode Activated</p>
+<h3>Portfolio: $<span id="money">1,248,750</span></h3>
+<div>PNL: <span id="pnl">+0</span></div>
 
-<div class="counter">
-Portfolio: $<span id="money">1248750</span>
+<div id="sentimentBar">
+<div id="sentimentFill"></div>
 </div>
+<div id="sentimentText"></div>
 
-<!-- TradingView Widget -->
-<div style="margin:30px;">
-<script src="https://s3.tradingview.com/tv.js"></script>
-<script>
-new TradingView.widget({
-  "width": 350,
-  "height": 400,
-  "symbol": "BINANCE:BTCUSDT",
-  "interval": "15",
-  "timezone": "Asia/Ho_Chi_Minh",
-  "theme": "dark",
-  "style": "1",
-  "locale": "en",
-  "toolbar_bg": "#000000",
-  "enable_publishing": false,
-  "hide_top_toolbar": true,
-  "hide_legend": true
-});
-</script>
-</div>
+<div id="orderBook"></div>
 
-<div class="links">
-<a href="#">Binance</a>
-<a href="#">Twitter</a>
-<a href="#">Telegram</a>
-</div>
+<button class="trade-btn" onclick="trade('buy')">BUY</button>
+<button class="trade-btn" onclick="trade('sell')">SELL</button>
+<button class="trade-btn" onclick="toggleWhale()">🐋 Whale Mode</button>
 
 </div>
 
 <script>
-// ENTER EFFECT
-document.getElementById("enterBtn").onclick = function() {
-    document.getElementById("enterScreen").style.display = "none";
-    document.getElementById("mainContent").style.display = "block";
-    document.getElementById("bgMusic").play();
+let money=1248750;
+let pnl=0;
+let whale=false;
+
+/* ENTER */
+document.getElementById("enterBtn").onclick=function(){
+document.getElementById("enterScreen").style.display="none";
+document.getElementById("mainContent").style.display="block";
+document.getElementById("bgMusic").play();
 }
 
-// MONEY COUNTER INCREASE
-let money = 1248750;
-setInterval(function() {
-    money += Math.floor(Math.random() * 50);
-    document.getElementById("money").innerText = money.toLocaleString();
-}, 1000);
+/* PNL */
+setInterval(()=>{
+let change=Math.floor(Math.random()*200-100);
+if(whale) change*=3;
+money+=change;
+pnl+=change;
+document.getElementById("money").innerText=money.toLocaleString();
+document.getElementById("pnl").innerText=(pnl>=0?"+":"")+pnl.toLocaleString();
+document.getElementById("pnl").style.color=pnl>=0?"#00ff88":"#ff4444";
+},1000);
+
+/* SENTIMENT */
+setInterval(()=>{
+let percent=Math.floor(Math.random()*60+30);
+document.getElementById("sentimentFill").style.width=percent+"%";
+document.getElementById("sentimentText").innerText="Market Sentiment: "+percent+"% Bullish";
+},3000);
+
+/* ORDER BOOK */
+setInterval(()=>{
+let html="";
+for(let i=0;i<5;i++){
+let price=(62000+Math.random()*100).toFixed(2);
+let size=(Math.random()*5).toFixed(2);
+html+="<div>"+price+" | "+size+"</div>";
+}
+document.getElementById("orderBook").innerHTML=html;
+},1500);
+
+/* LIQUIDATION */
+setInterval(()=>{
+let popup=document.createElement("div");
+popup.className="popup";
+let val=Math.floor(Math.random()*50000);
+popup.innerText="Liquidation -$"+val.toLocaleString();
+document.body.appendChild(popup);
+setTimeout(()=>popup.remove(),3000);
+},10000);
+
+/* TRADE GAME */
+function trade(type){
+let result=Math.random()>0.5;
+let popup=document.createElement("div");
+popup.className="popup";
+popup.innerText=result?"Trade Win 💰":"Trade Loss ❌";
+document.body.appendChild(popup);
+setTimeout(()=>popup.remove(),2000);
+}
+
+/* WHALE MODE */
+function toggleWhale(){
+whale=!whale;
+document.body.classList.toggle("whale-mode");
+}
+
+/* FLASH CRASH */
+setInterval(()=>{
+document.body.style.background="darkred";
+setTimeout(()=>document.body.style.background="radial-gradient(circle at top,#111 0%,#000 60%)",1000);
+},30000);
+
+/* CLICK GOLD SPARK */
+document.addEventListener("click",e=>{
+let spark=document.createElement("div");
+spark.style.position="absolute";
+spark.style.left=e.pageX+"px";
+spark.style.top=e.pageY+"px";
+spark.style.color="gold";
+spark.innerText="💰";
+document.body.appendChild(spark);
+setTimeout(()=>spark.remove(),800);
+});
 </script>
 
 </body>
