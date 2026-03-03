@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Marginla</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: black;
+    color: #fcd535;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* ENTER SCREEN */
+#enterScreen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999;
+}
+
+#enterBtn {
+    padding: 15px 40px;
+    border: 2px solid #fcd535;
+    background: transparent;
+    color: #fcd535;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#enterBtn:hover {
+    background: #fcd535;
+    color: black;
+    box-shadow: 0 0 30px #fcd535;
+}
+
+/* MAIN */
+.container {
+    margin-top: 80px;
+    display: none;
+}
+
+.avatar {
+    width: 150px;
+    border-radius: 50%;
+    border: 3px solid #fcd535;
+    box-shadow: 0 0 30px #fcd535;
+}
+
+h1 {
+    font-size: 45px;
+    text-shadow: 0 0 20px #fcd535;
+}
+
+.counter {
+    font-size: 30px;
+    margin: 20px;
+}
+
+.green { color: #00ff88; }
+.red { color: #ff4444; }
+
+/* LINKS */
+.links a {
+    display: block;
+    width: 250px;
+    margin: 12px auto;
+    padding: 14px;
+    border: 2px solid #fcd535;
+    color: #fcd535;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.links a:hover {
+    background: #fcd535;
+    color: black;
+    box-shadow: 0 0 25px #fcd535;
+}
+
+/* COIN RAIN */
+.coin {
+    position: absolute;
+    top: -50px;
+    color: #fcd535;
+    font-size: 20px;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="enterScreen">
+    <h1>WELCOME WHALE 🐳</h1>
+    <button id="enterBtn">ENTER THE MARKET</button>
+</div>
+
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container" id="mainContent">
+
+<img class="avatar" src="avatar.jpg">
+<h1>MARGINLA</h1>
+
+<div class="counter">
+Portfolio: $<span id="money">1248750</span>
+(<span id="pnl" class="green">+0</span>)
+</div>
+
+<!-- TradingView -->
+<div style="margin:30px;">
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+new TradingView.widget({
+  "width": 350,
+  "height": 400,
+  "symbol": "BINANCE:BTCUSDT",
+  "interval": "15",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "theme": "dark",
+  "style": "1",
+  "hide_top_toolbar": true,
+  "hide_legend": true
+});
+</script>
+</div>
+
+<div class="links">
+<a href="#">Binance</a>
+<a href="#">Twitter</a>
+<a href="#">Telegram</a>
+</div>
+
+</div>
+
+<script>
+// ENTER
+document.getElementById("enterBtn").onclick = function() {
+    document.getElementById("enterScreen").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+    document.getElementById("bgMusic").play();
+}
+
+// PNL COUNTER
+let money = 1248750;
+let pnl = 0;
+
+setInterval(function() {
+    let change = Math.floor(Math.random() * 200 - 100);
+    money += change;
+    pnl += change;
+
+    document.getElementById("money").innerText = money.toLocaleString();
+    document.getElementById("pnl").innerText = (pnl >= 0 ? "+" : "") + pnl.toLocaleString();
+
+    document.getElementById("pnl").className = pnl >= 0 ? "green" : "red";
+}, 1000);
+
+// COIN RAIN
+function createCoin() {
+    const coin = document.createElement("div");
+    coin.className = "coin";
+    coin.innerText = "₿";
+    coin.style.left = Math.random() * 100 + "vw";
+    coin.style.animationDuration = (Math.random() * 3 + 2) + "s";
+    document.body.appendChild(coin);
+
+    setTimeout(() => {
+        coin.remove();
+    }, 5000);
+}
+
+setInterval(createCoin, 300);
+</script>
+
+</body>
+</html>
