@@ -2,214 +2,150 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Marginla Billionaire Terminal</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<title>Crypto Market Terminal</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
-margin:0;
-font-family:'Orbitron',sans-serif;
-background:radial-gradient(circle at center,#111,#000);
-color:#fcd535;
-overflow:hidden;
-text-align:center;
+  margin:0;
+  background:#0d1117;
+  color:white;
+  font-family:Arial;
 }
-
-/* Glass container */
-.glass{
-backdrop-filter:blur(15px);
-background:rgba(255,215,0,0.05);
-border:1px solid rgba(255,215,0,0.3);
-border-radius:20px;
-padding:20px;
-width:350px;
-margin:auto;
-margin-top:50px;
-box-shadow:0 0 40px rgba(255,215,0,0.3);
+header{
+  padding:15px;
+  font-size:22px;
+  font-weight:bold;
+  border-bottom:1px solid #222;
 }
-
-/* Avatar glow */
-.avatar{
-width:150px;
-border-radius:50%;
-border:3px solid gold;
-box-shadow:0 0 50px gold;
-animation:pulse 2s infinite alternate;
+table{
+  width:100%;
+  border-collapse:collapse;
 }
-
-@keyframes pulse{
-from{box-shadow:0 0 20px gold;}
-to{box-shadow:0 0 70px gold;}
+th,td{
+  padding:12px;
+  border-bottom:1px solid #222;
+  text-align:left;
 }
-
-.counter{
-font-size:26px;
-margin:15px;
+th{
+  background:#111;
 }
-
-.green{color:#00ff88;}
-.red{color:#ff4444;}
-
+tr:hover{
+  background:#161b22;
+  cursor:pointer;
+}
+.green{color:#00ff99;}
+.red{color:#ff4d4d;}
 button{
-padding:10px 25px;
-border:none;
-background:gold;
-color:black;
-cursor:pointer;
-border-radius:8px;
-font-weight:bold;
+  padding:8px 15px;
+  background:#00ffcc;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
 }
-
-button:hover{
-transform:scale(1.1);
+.card{
+  padding:20px;
 }
-
-.popup{
-position:fixed;
-top:20px;
-right:20px;
-background:#111;
-padding:15px;
-border-left:5px solid red;
-color:white;
-display:none;
-}
-
-/* Explosion */
-.explode{
-position:absolute;
-color:gold;
-font-size:20px;
-pointer-events:none;
-animation:boom 0.6s forwards;
-}
-
-@keyframes boom{
-to{transform:scale(3);opacity:0;}
+canvas{
+  background:#111;
 }
 </style>
 </head>
-
 <body>
 
-<audio id="bgMusic" loop>
-<source src="music.mp3" type="audio/mpeg">
-</audio>
+<header>
+💎 Crypto Market Terminal
+<button onclick="login()" style="float:right;">Login</button>
+</header>
 
-<div class="glass">
-<img src="avatar.jpg" class="avatar">
-<h1>MARGINLA</h1>
+<div id="market"></div>
 
-<div class="counter">
-Portfolio: $<span id="money">1248750</span>
-(<span id="pnl" class="green">+0</span>)
+<div id="detail" style="display:none;" class="card">
+<h2 id="coinName"></h2>
+<p id="coinPrice"></p>
+<canvas id="chart"></canvas>
+<button onclick="back()">Back</button>
 </div>
 
-<div>BTC Price: $<span id="btcPrice">Loading...</span></div>
+<script type="module">
 
-<br>
-<button onclick="toggleWhale()">🐋 Whale Mode</button>
-<button onclick="startGame()">🎮 Trade</button>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-</div>
+const firebaseConfig={
+  apiKey:"AIzaSyDT905UnWKjyCZB2CzgzgLIk_P6NNslj7U",
+  authDomain:"lilo-f8779.firebaseapp.com",
+  projectId:"lilo-f8779",
+  storageBucket:"lilo-f8779.firebasestorage.app",
+  messagingSenderId:"542537325157",
+  appId:"1:542537325157:web:cd19e01a94a7535641848c"
+};
 
-<div class="popup" id="liq">⚠️ Massive Liquidation Detected!</div>
+initializeApp(firebaseConfig);
+const auth=getAuth();
 
-<script>
-
-/* MUSIC START */
-document.body.addEventListener("click",()=>{
-document.getElementById("bgMusic").play();
-},{once:true});
-
-/* PORTFOLIO */
-let money=1248750;
-let pnl=0;
-
-setInterval(()=>{
-let change=Math.floor(Math.random()*400-200);
-money+=change;
-pnl+=change;
-
-document.getElementById("money").innerText=money.toLocaleString();
-document.getElementById("pnl").innerText=(pnl>=0?"+":"")+pnl.toLocaleString();
-document.getElementById("pnl").className=pnl>=0?"green":"red";
-
-if(Math.abs(change)>300){
-document.getElementById("liq").style.display="block";
-setTimeout(()=>document.getElementById("liq").style.display="none",3000);
-}
-},1000);
-
-/* BTC REAL API */
-async function getBTC(){
-try{
-let res=await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
-let data=await res.json();
-document.getElementById("btcPrice").innerText=parseFloat(data.price).toLocaleString();
-}catch{}
-}
-setInterval(getBTC,5000);
-getBTC();
-
-/* Whale Mode */
-let whale=false;
-function toggleWhale(){
-whale=!whale;
-document.body.style.background=whale?
-"radial-gradient(circle at center,#331a00,#000)":
-"radial-gradient(circle at center,#111,#000)";
+window.login=async()=>{
+  const provider=new GoogleAuthProvider();
+  await signInWithPopup(auth,provider);
+  alert("Logged in!");
 }
 
-/* Explosion click */
-document.addEventListener("click",e=>{
-let boom=document.createElement("div");
-boom.className="explode";
-boom.innerText="💥";
-boom.style.left=e.pageX+"px";
-boom.style.top=e.pageY+"px";
-document.body.appendChild(boom);
-setTimeout(()=>boom.remove(),600);
-});
+async function loadMarket(){
+  const res=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false");
+  const data=await res.json();
 
-/* Mini trading game */
-function startGame(){
-let result=Math.random()>0.5?1000:-1000;
-money+=result;
-alert(result>0?"Trade Win +$1000":"Trade Loss -$1000");
+  let html="<table>";
+  html+="<tr><th>#</th><th>Name</th><th>Price</th><th>24h %</th><th>Market Cap</th><th>Volume</th></tr>";
+
+  data.forEach((coin,i)=>{
+    const change=coin.price_change_percentage_24h;
+    html+=`
+    <tr onclick="viewCoin('${coin.id}')">
+    <td>${i+1}</td>
+    <td>${coin.name}</td>
+    <td>$${coin.current_price.toLocaleString()}</td>
+    <td class="${change>=0?'green':'red'}">${change.toFixed(2)}%</td>
+    <td>$${coin.market_cap.toLocaleString()}</td>
+    <td>$${coin.total_volume.toLocaleString()}</td>
+    </tr>
+    `;
+  });
+
+  html+="</table>";
+  document.getElementById("market").innerHTML=html;
 }
 
-/* THREE JS BACKGROUND */
-const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-const renderer=new THREE.WebGLRenderer({alpha:true});
-renderer.setSize(window.innerWidth,window.innerHeight);
-document.body.appendChild(renderer.domElement);
+window.viewCoin=async(id)=>{
+  document.getElementById("market").style.display="none";
+  document.getElementById("detail").style.display="block";
 
-const geometry=new THREE.BufferGeometry();
-const vertices=[];
-for(let i=0;i<2000;i++){
-vertices.push(
-THREE.MathUtils.randFloatSpread(2000),
-THREE.MathUtils.randFloatSpread(2000),
-THREE.MathUtils.randFloatSpread(2000)
-);
+  const res=await fetch(`https://api.coingecko.com/api/v3/coins/${id}?localization=false&sparkline=true`);
+  const data=await res.json();
+
+  document.getElementById("coinName").innerText=data.name;
+  document.getElementById("coinPrice").innerText="Price: $"+data.market_data.current_price.usd;
+
+  const prices=data.market_data.sparkline_7d.price;
+
+  const ctx=document.getElementById("chart");
+  new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:prices.map((_,i)=>i),
+      datasets:[{
+        data:prices,
+        borderColor:"#00ffcc"
+      }]
+    }
+  });
 }
-geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
-const material=new THREE.PointsMaterial({color:0xffd700});
-const stars=new THREE.Points(geometry,material);
-scene.add(stars);
 
-camera.position.z=5;
-
-function animate(){
-requestAnimationFrame(animate);
-stars.rotation.x+=0.0005;
-stars.rotation.y+=0.0005;
-renderer.render(scene,camera);
+window.back=()=>{
+  document.getElementById("market").style.display="block";
+  document.getElementById("detail").style.display="none";
 }
-animate();
+
+loadMarket();
 
 </script>
 </body>
