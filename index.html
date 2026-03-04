@@ -2,237 +2,195 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>MARGINLA - Meme Lord Terminal</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Marginla</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
 
 <style>
-body{
-  margin:0;
-  background:#0b0f14;
-  color:white;
-  font-family:Arial, Helvetica, sans-serif;
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: black;
+    color: #fcd535;
+    text-align: center;
+    overflow: hidden;
 }
 
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 25px;
-  background:#111827;
-  border-bottom:1px solid #1f2937;
-  position:sticky;
-  top:0;
-  z-index:10;
+/* ENTER SCREEN */
+#enterScreen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999;
 }
 
-.logo{
-  font-size:22px;
-  font-weight:bold;
-  color:#00ff99;
+#enterBtn {
+    padding: 15px 40px;
+    border: 2px solid #fcd535;
+    background: transparent;
+    color: #fcd535;
+    font-size: 20px;
+    cursor: pointer;
 }
 
-.search{
-  padding:8px 12px;
-  background:#1f2937;
-  border:none;
-  color:white;
-  width:250px;
+#enterBtn:hover {
+    background: #fcd535;
+    color: black;
+    box-shadow: 0 0 30px #fcd535;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
+/* MAIN */
+.container {
+    margin-top: 80px;
+    display: none;
 }
 
-th,td{
-  padding:12px;
-  border-bottom:1px solid #1f2937;
-  text-align:left;
+.avatar {
+    width: 150px;
+    border-radius: 50%;
+    border: 3px solid #fcd535;
+    box-shadow: 0 0 30px #fcd535;
 }
 
-th{
-  background:#111827;
+h1 {
+    font-size: 45px;
+    text-shadow: 0 0 20px #fcd535;
 }
 
-tr:hover{
-  background:#1a2230;
-  cursor:pointer;
+.counter {
+    font-size: 30px;
+    margin: 20px;
 }
 
-.green{color:#00ff99;}
-.red{color:#ff4d4d;}
+.green { color: #00ff88; }
+.red { color: #ff4444; }
 
-.section{
-  padding:20px;
+/* LINKS */
+.links a {
+    display: block;
+    width: 250px;
+    margin: 12px auto;
+    padding: 14px;
+    border: 2px solid #fcd535;
+    color: #fcd535;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s;
 }
 
-.card{
-  background:#111827;
-  padding:15px;
-  margin-bottom:15px;
+.links a:hover {
+    background: #fcd535;
+    color: black;
+    box-shadow: 0 0 25px #fcd535;
 }
 
-.avatar{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:90px;
-  border-radius:50%;
-  box-shadow:0 0 25px #00ff99;
-  animation:glow 2s infinite alternate;
+/* COIN RAIN */
+.coin {
+    position: absolute;
+    top: -50px;
+    color: #fcd535;
+    font-size: 20px;
+    animation: fall linear infinite;
 }
 
-@keyframes glow{
-  from{box-shadow:0 0 15px #00ff99;}
-  to{box-shadow:0 0 35px #00ff99;}
+@keyframes fall {
+    to {
+        transform: translateY(110vh);
+    }
 }
-
-button{
-  padding:8px 14px;
-  background:#00ff99;
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-canvas{
-  background:#111827;
-  padding:10px;
-}
-
 </style>
 </head>
 
 <body>
 
-<header>
-<div class="logo">🐸 MARGINLA</div>
-<input type="text" class="search" placeholder="Search coin..." onkeyup="searchCoin(this.value)">
-</header>
-
-<div class="section" id="global"></div>
-<div class="section" id="gainers"></div>
-<div class="section" id="market"></div>
-
-<div id="detail" style="display:none;" class="section">
-<h2 id="coinName"></h2>
-<p id="coinPrice"></p>
-<canvas id="chart"></canvas>
-<br>
-<button onclick="back()">Back</button>
+<div id="enterScreen">
+    <h1>WELCOME WHALE 🐳</h1>
+    <button id="enterBtn">ENTER THE MARKET</button>
 </div>
 
-<!-- AVATAR -->
-<img src="avatar.png" class="avatar">
-
-<!-- MUSIC -->
-<audio autoplay loop>
+<audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
+<div class="container" id="mainContent">
+
+<img class="avatar" src="avatar.jpg">
+<h1>MARGINLA</h1>
+
+<div class="counter">
+Portfolio: $<span id="money">1248750</span>
+(<span id="pnl" class="green">+0</span>)
+</div>
+
+<!-- TradingView -->
+<div style="margin:30px;">
+<script src="https://s3.tradingview.com/tv.js"></script>
 <script>
+new TradingView.widget({
+  "width": 350,
+  "height": 400,
+  "symbol": "BINANCE:BTCUSDT",
+  "interval": "15",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "theme": "dark",
+  "style": "1",
+  "hide_top_toolbar": true,
+  "hide_legend": true
+});
+</script>
+</div>
 
-let allCoins=[];
+<div class="links">
+<a href="#">Binance</a>
+<a href="#">Twitter</a>
+<a href="#">Telegram</a>
+</div>
 
-async function loadGlobal(){
-  const res=await fetch("https://api.coingecko.com/api/v3/global");
-  const data=await res.json();
-  const g=data.data;
+</div>
 
-  document.getElementById("global").innerHTML=`
-  <div class="card">
-  🌍 Market Cap: $${Math.round(g.total_market_cap.usd).toLocaleString()} <br>
-  📊 24h Volume: $${Math.round(g.total_volume.usd).toLocaleString()} <br>
-  ₿ BTC Dominance: ${g.market_cap_percentage.btc.toFixed(2)}%
-  </div>
-  `;
+<script>
+// ENTER
+document.getElementById("enterBtn").onclick = function() {
+    document.getElementById("enterScreen").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+    document.getElementById("bgMusic").play();
 }
 
-async function loadMarket(){
-  const res=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false");
-  const data=await res.json();
-  allCoins=data;
+// PNL COUNTER
+let money = 1248750;
+let pnl = 0;
 
-  renderTable(data);
-  renderGainers(data);
+setInterval(function() {
+    let change = Math.floor(Math.random() * 200 - 100);
+    money += change;
+    pnl += change;
+
+    document.getElementById("money").innerText = money.toLocaleString();
+    document.getElementById("pnl").innerText = (pnl >= 0 ? "+" : "") + pnl.toLocaleString();
+
+    document.getElementById("pnl").className = pnl >= 0 ? "green" : "red";
+}, 1000);
+
+// COIN RAIN
+function createCoin() {
+    const coin = document.createElement("div");
+    coin.className = "coin";
+    coin.innerText = "₿";
+    coin.style.left = Math.random() * 100 + "vw";
+    coin.style.animationDuration = (Math.random() * 3 + 2) + "s";
+    document.body.appendChild(coin);
+
+    setTimeout(() => {
+        coin.remove();
+    }, 5000);
 }
 
-function renderTable(data){
-  let html="<table>";
-  html+="<tr><th>#</th><th>Name</th><th>Price</th><th>24h %</th><th>Market Cap</th></tr>";
-
-  data.forEach((coin,i)=>{
-    const change=coin.price_change_percentage_24h;
-    html+=`
-    <tr onclick="viewCoin('${coin.id}')">
-    <td>${i+1}</td>
-    <td>${coin.name} (${coin.symbol.toUpperCase()})</td>
-    <td>$${coin.current_price.toLocaleString()}</td>
-    <td class="${change>=0?'green':'red'}">${change.toFixed(2)}%</td>
-    <td>$${coin.market_cap.toLocaleString()}</td>
-    </tr>
-    `;
-  });
-
-  html+="</table>";
-  document.getElementById("market").innerHTML=html;
-}
-
-function renderGainers(data){
-  const sorted=[...data].sort((a,b)=>b.price_change_percentage_24h - a.price_change_percentage_24h);
-  const top=sorted.slice(0,5);
-
-  let html="<div class='card'><h3>🚀 Top Gainers 24h</h3>";
-  top.forEach(c=>{
-    html+=`${c.name} <span class="green">${c.price_change_percentage_24h.toFixed(2)}%</span><br>`;
-  });
-  html+="</div>";
-
-  document.getElementById("gainers").innerHTML=html;
-}
-
-window.viewCoin=async(id)=>{
-  document.getElementById("market").style.display="none";
-  document.getElementById("gainers").style.display="none";
-  document.getElementById("detail").style.display="block";
-
-  const res=await fetch(`https://api.coingecko.com/api/v3/coins/${id}?localization=false&sparkline=true`);
-  const data=await res.json();
-
-  document.getElementById("coinName").innerText=data.name;
-  document.getElementById("coinPrice").innerText="Price: $"+data.market_data.current_price.usd;
-
-  const prices=data.market_data.sparkline_7d.price;
-
-  const ctx=document.getElementById("chart");
-  new Chart(ctx,{
-    type:"line",
-    data:{
-      labels:prices.map((_,i)=>i),
-      datasets:[{
-        data:prices,
-        borderColor:"#00ff99"
-      }]
-    }
-  });
-}
-
-window.back=()=>{
-  document.getElementById("market").style.display="block";
-  document.getElementById("gainers").style.display="block";
-  document.getElementById("detail").style.display="none";
-}
-
-function searchCoin(keyword){
-  const filtered=allCoins.filter(c=>
-    c.name.toLowerCase().includes(keyword.toLowerCase())
-  );
-  renderTable(filtered);
-}
-
-loadGlobal();
-loadMarket();
-
+setInterval(createCoin, 300);
 </script>
 
 </body>
