@@ -3,123 +3,194 @@
 <head>
 <meta charset="UTF-8">
 <title>Marginla</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Orbitron', sans-serif;
-    background: black;
-    color: #fcd535;
-    text-align: center;
-    overflow: hidden;
+
+body{
+margin:0;
+padding:0;
+font-family:'Orbitron',sans-serif;
+color:#fcd535;
+text-align:center;
+overflow:hidden;
+background:linear-gradient(270deg,#000000,#050505,#111111,#000000);
+background-size:800% 800%;
+animation:bgMove 20s infinite;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
 }
 
 /* ENTER SCREEN */
-#enterScreen {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 999;
+
+#enterScreen{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:999;
 }
 
-#enterBtn {
-    padding: 15px 40px;
-    border: 2px solid #fcd535;
-    background: transparent;
-    color: #fcd535;
-    font-size: 20px;
-    cursor: pointer;
+#enterBtn{
+padding:16px 45px;
+border:2px solid #fcd535;
+background:transparent;
+color:#fcd535;
+font-size:22px;
+cursor:pointer;
+transition:.3s;
 }
 
-#enterBtn:hover {
-    background: #fcd535;
-    color: black;
-    box-shadow: 0 0 30px #fcd535;
+#enterBtn:hover{
+background:#fcd535;
+color:black;
+box-shadow:0 0 40px #fcd535;
+transform:scale(1.1);
 }
 
 /* MAIN */
-.container {
-    margin-top: 80px;
-    display: none;
+
+.container{
+margin-top:80px;
+display:none;
+animation:fadeIn 2s;
 }
 
-.avatar {
-    width: 150px;
-    border-radius: 50%;
-    border: 3px solid #fcd535;
-    box-shadow: 0 0 30px #fcd535;
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(30px)}
+to{opacity:1}
 }
 
-h1 {
-    font-size: 45px;
-    text-shadow: 0 0 20px #fcd535;
+/* AVATAR */
+
+.avatar{
+width:160px;
+border-radius:50%;
+border:3px solid #fcd535;
+box-shadow:0 0 40px #fcd535;
+transition:.3s;
 }
 
-.counter {
-    font-size: 30px;
-    margin: 20px;
+.avatar:hover{
+transform:scale(1.1);
+box-shadow:0 0 60px #fcd535;
 }
 
-.green { color: #00ff88; }
-.red { color: #ff4444; }
+/* TITLE */
+
+h1{
+font-size:48px;
+text-shadow:0 0 30px #fcd535;
+}
+
+/* PORTFOLIO */
+
+.counter{
+font-size:32px;
+margin:20px;
+transition:.3s;
+}
+
+.green{color:#00ff88;}
+.red{color:#ff4444;}
 
 /* LINKS */
-.links a {
-    display: block;
-    width: 250px;
-    margin: 12px auto;
-    padding: 14px;
-    border: 2px solid #fcd535;
-    color: #fcd535;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: 0.3s;
+
+.links a{
+display:block;
+width:260px;
+margin:12px auto;
+padding:14px;
+border:2px solid #fcd535;
+color:#fcd535;
+text-decoration:none;
+border-radius:8px;
+transition:.3s;
 }
 
-.links a:hover {
-    background: #fcd535;
-    color: black;
-    box-shadow: 0 0 25px #fcd535;
+.links a:hover{
+background:#fcd535;
+color:black;
+box-shadow:0 0 25px #fcd535;
+transform:scale(1.05);
 }
 
 /* COIN RAIN */
-.coin {
-    position: absolute;
-    top: -50px;
-    color: #fcd535;
-    font-size: 20px;
-    animation: fall linear infinite;
+
+.coin{
+position:absolute;
+top:-50px;
+color:#fcd535;
+font-size:22px;
+animation:fall linear infinite;
 }
 
-@keyframes fall {
-    to {
-        transform: translateY(110vh);
-    }
+@keyframes fall{
+to{transform:translateY(110vh);}
 }
+
+/* MOUSE TRAIL */
+
+.trail{
+position:absolute;
+width:6px;
+height:6px;
+background:#fcd535;
+border-radius:50%;
+pointer-events:none;
+animation:trailFade .5s linear;
+}
+
+@keyframes trailFade{
+to{opacity:0;transform:scale(3);}
+}
+
+/* LIQUIDATION ALERT */
+
+.alert{
+position:fixed;
+top:20px;
+right:20px;
+background:red;
+color:white;
+padding:15px;
+border-radius:6px;
+display:none;
+box-shadow:0 0 20px red;
+}
+
 </style>
 </head>
 
 <body>
 
 <div id="enterScreen">
-    <h1>WELCOME WHALE 🐳</h1>
-    <button id="enterBtn">ENTER THE MARKET</button>
+
+<h1>WELCOME WHALE 🐳</h1>
+
+<button id="enterBtn">ENTER THE MARKET</button>
+
 </div>
 
+
 <audio id="bgMusic" loop>
-  <source src="music.mp3" type="audio/mpeg">
+<source src="music.mp3" type="audio/mpeg">
 </audio>
+
 
 <div class="container" id="mainContent">
 
-<img class="avatar" src="avatar.jpg">
+<img class="avatar" id="avatar" src="avatar.jpg">
+
 <h1>MARGINLA</h1>
 
 <div class="counter">
@@ -127,70 +198,182 @@ Portfolio: $<span id="money">1248750</span>
 (<span id="pnl" class="green">+0</span>)
 </div>
 
-<!-- TradingView -->
-<div style="margin:30px;">
-<script src="https://s3.tradingview.com/tv.js"></script>
-<script>
-new TradingView.widget({
-  "width": 350,
-  "height": 400,
-  "symbol": "BINANCE:BTCUSDT",
-  "interval": "15",
-  "timezone": "Asia/Ho_Chi_Minh",
-  "theme": "dark",
-  "style": "1",
-  "hide_top_toolbar": true,
-  "hide_legend": true
-});
-</script>
+
+<!-- CHART SWITCH -->
+
+<div style="margin-bottom:10px">
+
+<button onclick="loadChart('BTCUSDT')">BTC</button>
+
+<button onclick="loadChart('ETHUSDT')">ETH</button>
+
 </div>
+
+
+<div id="chart"></div>
+
 
 <div class="links">
+
 <a href="#">Binance</a>
+
 <a href="#">Twitter</a>
+
 <a href="#">Telegram</a>
+
 </div>
 
 </div>
+
+<div class="alert" id="alertBox">
+
+⚠️ LIQUIDATION DETECTED
+
+</div>
+
+
+<script src="https://s3.tradingview.com/tv.js"></script>
 
 <script>
-// ENTER
-document.getElementById("enterBtn").onclick = function() {
-    document.getElementById("enterScreen").style.display = "none";
-    document.getElementById("mainContent").style.display = "block";
-    document.getElementById("bgMusic").play();
+
+function loadChart(pair){
+
+document.getElementById("chart").innerHTML="";
+
+new TradingView.widget({
+
+"width":350,
+
+"height":400,
+
+"symbol":"BINANCE:"+pair,
+
+"interval":"15",
+
+"timezone":"Asia/Ho_Chi_Minh",
+
+"theme":"dark",
+
+"style":"1",
+
+"hide_top_toolbar":true,
+
+"hide_legend":true,
+
+"container_id":"chart"
+
+});
+
 }
 
-// PNL COUNTER
-let money = 1248750;
-let pnl = 0;
+loadChart("BTCUSDT");
 
-setInterval(function() {
-    let change = Math.floor(Math.random() * 200 - 100);
-    money += change;
-    pnl += change;
 
-    document.getElementById("money").innerText = money.toLocaleString();
-    document.getElementById("pnl").innerText = (pnl >= 0 ? "+" : "") + pnl.toLocaleString();
+// ENTER
 
-    document.getElementById("pnl").className = pnl >= 0 ? "green" : "red";
-}, 1000);
+document.getElementById("enterBtn").onclick=function(){
+
+document.getElementById("enterScreen").style.display="none";
+
+document.getElementById("mainContent").style.display="block";
+
+document.getElementById("bgMusic").play();
+
+}
+
+
+// PORTFOLIO COUNTER
+
+let money=1248750;
+
+let pnl=0;
+
+setInterval(function(){
+
+let change=Math.floor(Math.random()*200-100);
+
+money+=change;
+
+pnl+=change;
+
+document.getElementById("money").innerText=money.toLocaleString();
+
+document.getElementById("pnl").innerText=(pnl>=0?"+":"")+pnl.toLocaleString();
+
+document.getElementById("pnl").className=pnl>=0?"green":"red";
+
+},1000);
+
 
 // COIN RAIN
-function createCoin() {
-    const coin = document.createElement("div");
-    coin.className = "coin";
-    coin.innerText = "₿";
-    coin.style.left = Math.random() * 100 + "vw";
-    coin.style.animationDuration = (Math.random() * 3 + 2) + "s";
-    document.body.appendChild(coin);
 
-    setTimeout(() => {
-        coin.remove();
-    }, 5000);
+function createCoin(){
+
+const coin=document.createElement("div");
+
+coin.className="coin";
+
+coin.innerText="₿";
+
+coin.style.left=Math.random()*100+"vw";
+
+coin.style.animationDuration=(Math.random()*3+2)+"s";
+
+document.body.appendChild(coin);
+
+setTimeout(()=>{coin.remove()},5000);
+
 }
 
-setInterval(createCoin, 300);
+setInterval(createCoin,300);
+
+
+// MOUSE TRAIL
+
+document.addEventListener("mousemove",e=>{
+
+let trail=document.createElement("div");
+
+trail.className="trail";
+
+trail.style.left=e.pageX+"px";
+
+trail.style.top=e.pageY+"px";
+
+document.body.appendChild(trail);
+
+setTimeout(()=>trail.remove(),500);
+
+});
+
+
+// AVATAR EFFECT
+
+document.getElementById("avatar").onclick=function(){
+
+this.style.transform="scale(1.3)";
+
+setTimeout(()=>this.style.transform="scale(1)",300);
+
+}
+
+
+// LIQUIDATION ALERT
+
+setInterval(function(){
+
+if(Math.random()<0.1){
+
+let box=document.getElementById("alertBox");
+
+box.style.display="block";
+
+setTimeout(()=>box.style.display="none",3000);
+
+}
+
+},5000);
+
 </script>
 
 </body>
